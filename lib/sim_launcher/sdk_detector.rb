@@ -7,7 +7,7 @@ module SimLauncher
 
     def available_sdk_versions
       @simulator.showsdks.split("\n").map { |sdk_line|
-        sdk_line[/\(([\d.]+)\)$/,1] # grab any "(x.x)" part at the end of the line
+        sdk_line[/([\d.]+)/,1] # grab any "(x.x)" part at the end of the line
       }.compact
     end
 

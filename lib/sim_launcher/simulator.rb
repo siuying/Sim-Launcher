@@ -11,7 +11,7 @@ class Simulator
   end
 
   def showsdks
-    @sdk = `xcodebuild -showsdks | grep iphonesimulator`
+    @sdk = `xcodebuild -showsdks | grep iphonesimulator | awk '{print $4}'`
     raise "failed showsdks command" unless $?.success?
     @sdk
   end
