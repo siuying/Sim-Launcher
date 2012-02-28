@@ -4,9 +4,10 @@ class Simulator
   def initialize
     @developer_dir = `xcode-select -print-path`
     raise "failed find xcode path using 'xcode-select -print-path' command!" unless $?.success?
+    @developer_dir = @developer_dir.strip
 
     @platform_dir = "#{@developer_dir}/Platforms/iPhoneSimulator.platform"
-    @simulator_path = "#{@developer_dir}/Developer/Applications/iPhone Simulator.app/Contents/MacOS/iPhone Simulator"
+    @simulator_path = "#{@platform_dir}/Developer/Applications/iPhone Simulator.app/Contents/MacOS/iPhone Simulator"
   end
 
   def showsdks
@@ -18,7 +19,6 @@ class Simulator
   def launch_ios_app(app_path, sdk_version, device_family)
     sdk_version ||= SdkDetector.new(self).latest_sdk_version
     @sdk_root = "#{@platform_dir}/Developer/SDKs/iPhoneSimulator#{sdk_version}.sdk"
-    puts "run command: '#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'"
     `'#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'`
   end
 
