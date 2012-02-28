@@ -19,7 +19,8 @@ class Simulator
   def launch_ios_app(app_path, sdk_version, device_family)
     sdk_version ||= SdkDetector.new(self).latest_sdk_version
     @sdk_root = "#{@platform_dir}/Developer/SDKs/iPhoneSimulator#{sdk_version}.sdk"
-    `'#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'`
+    cmd = "'#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'"
+    @pipe = IO.popen(cmd, "r")
   end
 
   def launch_ipad_app( app_path, sdk )
@@ -32,6 +33,7 @@ class Simulator
 
   def quit_simulator
     `echo 'application "iPhone Simulator" quit' | osascript`
+    @pipe.close if @pipe
   end
 end
 end
