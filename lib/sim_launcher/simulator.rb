@@ -18,7 +18,8 @@ class Simulator
   def launch_ios_app(app_path, sdk_version, device_family)
     sdk_version ||= SdkDetector.new(self).latest_sdk_version
     @sdk_root = "#{@platform_dir}/Developer/SDKs/iPhoneSimulator#{sdk_version}.sdk"
-    `#{@simulator_path} -SimulateApplication #{app_path} -SimulateDevice #{device_family} -currentSDKRoot #{@sdk_root}`
+    puts "run command: '#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'"
+    `'#{@simulator_path}' -SimulateApplication '#{app_path}' -SimulateDevice #{device_family} -currentSDKRoot '#{@sdk_root}'`
   end
 
   def launch_ipad_app( app_path, sdk )
