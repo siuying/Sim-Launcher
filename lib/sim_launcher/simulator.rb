@@ -1,17 +1,24 @@
 module SimLauncher
 class Simulator
 
-  def initialize( iphonesim_path = nil )
-    @iphonesim_path = iphonesim_path || File.join( File.dirname(__FILE__), '..', '..', 'native', 'iphonesim' )
+  def initialize
+    @developer_dir = `xcode-select -print-path`
+    raise "failed find xcode path using 'xcode-select -print-path' command!" unless $?.success?
+
+    @platform_dir = "#{@developer_dir}/Platforms/iPhoneSimulator.platform"
+    @simulator_path = "#{@developer_dir}/Developer/Applications/iPhone Simulator.app/Contents/MacOS/iPhone Simulator"
   end
 
   def showsdks
-    run_synchronous_command( 'showsdks' )
+    @sdk = `xcodebuild -showsdks | grep iphonesimulator`
+    raise "failed showsdks command" unless $?.success?
+    @sdk
   end
 
   def launch_ios_app(app_path, sdk_version, device_family)
     sdk_version ||= SdkDetector.new(self).latest_sdk_version
-  	run_synchronous_command( :launch, app_path, sdk_version, device_family )
+    @sdk_root = "#{@platform_dir}/Developer/SDKs/iPhoneSimulator#{sdk_version}.sdk"
+    `#{@simulator_path} -SimulateApplication #{app_path} -SimulateDevice #{device_family} -currentSDKRoot #{@sdk_root}`
   end
 
   def launch_ipad_app( app_path, sdk )
@@ -24,17 +31,6 @@ class Simulator
 
   def quit_simulator
     `echo 'application "iPhone Simulator" quit' | osascript`
-  end
-
-  def run_synchronous_command( *args )
-    cmd = cmd_line_with_args( args )
-    puts "executing #{cmd}" if $DEBUG
-    `#{cmd}`
-  end
-
-  def cmd_line_with_args( args )
-    cmd_sections = [@iphonesim_path] + args.map{ |x| "\"#{x.to_s}\"" } << '2>&1'
-    cmd_sections.join(' ')
-  end
+    end
 end
 end
