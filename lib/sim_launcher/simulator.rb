@@ -13,6 +13,7 @@ class Simulator
   def showsdks
     @sdk = `xcodebuild -showsdks | grep iphonesimulator | awk '{print $4}'`
     raise "failed showsdks command" unless $?.success?
+    raise "failed showsdks return nothing" if @sdk.strip == ""
     @sdk
   end
 
